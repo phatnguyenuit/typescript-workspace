@@ -1,4 +1,4 @@
-export class Node<TElement = any> {
+export class Node<TElement> {
   element: TElement;
   next: Node<TElement> | null;
 

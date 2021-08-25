@@ -1,25 +1,29 @@
 import { Node } from './Node';
 
-type LinkedListCallback<TElement = any, TReturn = void> = (
+type LinkedListCallback<TElement, TReturn = void> = (
   currentNode: Node<TElement> | null,
   index: number,
   linkedList: LinkedList<TElement>,
 ) => TReturn;
 
-// type LinkedListReduceCallback<TElement = any, TReturn = void> = (
-//   prevValue: TReturn,
-//   currentNode: Node<TElement> | null,
-//   index: number,
-//   linkedList: LinkedList<TElement>,
-// ) => TReturn;
+export class LinkedList<TElement> {
+  protected length: number;
+  protected head: Node<TElement> | null;
 
-export class LinkedList<TElement = any> {
-  length: number;
-  head: Node<TElement> | null;
+  // Separator string to use in print method
+  protected separator: string = '=>';
 
   constructor() {
     this.head = null;
     this.length = 0;
+  }
+
+  get isEmpty(): boolean {
+    return this.length === 0;
+  }
+
+  get size(): number {
+    return this.length;
   }
 
   append(element: TElement) {
@@ -85,8 +89,33 @@ export class LinkedList<TElement = any> {
 
     newNode.next = currentNode;
     prevNode!.next = newNode;
+    this.length += 1;
 
     return true;
+  }
+
+  indexOf(element: TElement): number {
+    if (!this.length) return -1;
+
+    let currentNode = this.head;
+    let index = 0;
+
+    while (currentNode) {
+      if (currentNode.element === element) {
+        return index;
+      }
+
+      currentNode = currentNode.next;
+      index += 1;
+    }
+
+    return -1;
+  }
+
+  remove(element: TElement): TElement | null {
+    const index = this.indexOf(element);
+
+    return this.removeAt(index);
   }
 
   forEach(callback: LinkedListCallback<TElement>) {
@@ -115,15 +144,13 @@ export class LinkedList<TElement = any> {
     return transformedLinkedList;
   }
 
-  // TODO implement reduce method
-
   toString() {
     let str: string = '';
     this.forEach((currentNode) => {
       str += `${currentNode?.element}`;
 
       if (currentNode?.next) {
-        str += ' => ';
+        str += ` ${this.separator} `;
       }
     });
 
